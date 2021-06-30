@@ -1,0 +1,133 @@
+<h3>{{Titulo}} <small>{{TituloAccionABMC[AccionABMC]}}</small></h3>
+<div class="row justify-content-center" *ngIf="AccionABMC == 'L'">
+  <button type="button" class="btn btn-primary" (click)="Agregar()">
+    <span class="fas fa-plus"> </span>
+    Agregar Deudor
+  </button>
+</div>
+<p></p>
+
+<!-- Tabla de resutados de busqueda y Paginador-->
+<div
+  id="divTablaResultados"
+  *ngIf="AccionABMC == 'L' &&  DeudoresArray?.length > 0"
+>
+  <table class="table table-bordered table-striped">
+    <thead>
+      <tr>
+        <th class="text-center">Nombre y apellido</th>
+        <th class="text-center">Monto adeudado</th>
+        <th class="text-center">Incobrable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let deudor of DeudoresArray">
+        <td>{{deudor.DeudorApeNom | uppercase}}</td>
+        <td class="text-right">{{deudor.DeudorMonto | currency: "$"}}</td>
+        <td>{{deudor.DeudorIncobrable ? 'SI' : 'NO'}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- Registro en Alta,Modificacion o Consulta -->
+<form name="FormRegistro" *ngIf="AccionABMC != 'L'" [formGroup]="FormRegistro">
+  <fieldset [disabled]="AccionABMC==='C'">
+    <!--campo nombre-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="DeudorApeNom">
+        Nombre y apellido <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          class="form-control text-uppercase"
+          formControlName="DeudorApeNom"
+          [ngClass]="{'is-invalid':(FormRegistro.controls.DeudorApeNom.touched || submitted) && FormRegistro.controls.DeudorApeNom.errors}"
+        />
+        <span
+          class="text-danger"
+          *ngIf="(FormRegistro.controls.DeudorApeNom.touched || submitted) && FormRegistro.controls.DeudorApeNom.errors && FormRegistro.controls.DeudorApeNom.errors.required "
+        >
+          Dato requerido
+        </span>
+        <span
+          class="text-danger"
+          *ngIf="(FormRegistro.controls.DeudorApeNom.touched || submitted) && (FormRegistro.controls.DeudorApeNom.errors?.minlength || FormRegistro.controls.DeudorApeNom.errors?.maxlength)"
+          >Dato texto de 5 a 50 caracteres</span
+        >
+      </div>
+    </div>
+
+    <!--campo precio-->
+    <div class="row form-group">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="DeudorMonto">
+        Monto adeudado <span class="text-danger">*</span>
+      </label>
+      <div class="col-sm-6">
+        <input
+          type="text"
+          name="Precio"
+          class="form-control"
+          formControlName="DeudorMonto"
+          [ngClass]="{'is-invalid': (FormRegistro.controls.DeudorMonto.touched || submitted) && FormRegistro.controls.DeudorMonto.errors} "
+        />
+        <span
+          class="text-danger"
+          *ngIf="(FormRegistro.controls.DeudorMonto.touched || submitted) && FormRegistro.controls.DeudorMonto.errors && FormRegistro.controls.DeudorMonto.errors.required "
+        >
+          Dato requerido
+        </span>
+        <span
+          class="text-danger"
+          *ngIf="(FormRegistro.controls.DeudorMonto.touched || submitted) && FormRegistro.controls.DeudorMonto.errors?.pattern"
+        >
+          Dato numérico, 1 a 7 dígitos.
+        </span>
+      </div>
+    </div>
+
+    <!--campo activo-->
+    <div class="form-group row">
+      <label class="col-form-label col-sm-2 offset-sm-2" for="DeudorIncobrable"
+        >Es Incobrable</label
+      >
+      <div class="col-sm-6">
+        <select
+          name="Activo"
+          [attr.disabled]="true"
+          class="form-control"
+          formControlName="DeudorIncobrable"
+        >
+          <option *ngFor="let opt of OpcionesActivo" [ngValue]="opt.Id">
+            ‌{{ opt.Nombre }}
+          </option>
+        </select>
+      </div>
+    </div>
+  </fieldset>
+
+  <!-- Botones Grabar, Cancelar/Volver' -->
+  <div class="row justify-content-center">
+    <button
+      type="button"
+      class="btn btn-primary"
+      (click)="Grabar()"
+      *ngIf=" AccionABMC == 'A'  || AccionABMC == 'M' "
+    >
+      <span class="fas fa-check"></span> Grabar
+    </button>
+    &nbsp;
+    <button type="button" class="btn btn-warning" (click)="Volver()">
+      <span class="fas fa-undo"></span>
+      {{AccionABMC == 'A' || AccionABMC == 'M' ? 'Cancelar' : 'Volver'}}
+    </button>
+  </div>
+
+  <!--texto: Revisar los datos ingresados...-->
+  <div
+    id="divMsjFormRegistro"
+    class="row alert alert-danger"
+    *ngIf="submitted && FormRegistro.invalid"
+  ></div>
+</form>
